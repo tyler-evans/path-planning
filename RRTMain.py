@@ -1,41 +1,24 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import ArtistAnimation
 import numpy as np
-from Environment.Environment import PathPlanningProblem
+from Environment.Environment import Environment
 
 from Search.RRTSearch import ExploreDomain
-from Utils.Seed import Seed
 
 
 def main():
 
-    Seed()
-
     width = 10.0
     height = 10.0
+    num_objects = 10
 
-    pp = PathPlanningProblem( width, height, 10, 4.0, 4.0)
-    #pp.obstacles = []
-    initial, goals = pp.CreateProblemInstance()
-
-    fig, ax = plt.subplots(figsize=(8,8))
-    ax.set_xlim(0.0, width)
-    ax.set_ylim(0.0, height)
-
-    for o in pp.obstacles:
-        ax.add_patch(o.patch)
-
-    ip = plt.Rectangle((initial[0],initial[1]), 0.1, 0.1, facecolor='#ff0000')
-    ax.add_patch(ip)
-
-    for g in goals:
-        g = plt.Rectangle((g[0],g[1]), 0.1, 0.1, facecolor='#00ff00')
-        ax.add_patch(g)
-
-
+    environment = Environment(width, height, num_objects, 4.0, 4.0)
+    pp = environment.problem
+    initial, goal = environment.initial, environment.goal
+    ax = environment.ax
+    fig = environment.fig
 
     num_steps = 5000
-    goal = goals[0]
     vertices, edges, images = ExploreDomain(pp, initial, goal, num_steps, ax=ax, goal_prob=0.4)
 
     images.append(ax.scatter(*vertices.T, s=1))
@@ -58,11 +41,10 @@ def main():
     else:
         print('no solution')
 
-
     animation = ArtistAnimation(fig, [images[:i] for i in range(1, len(images)+1)], interval=1, blit=True, repeat=False)
     plt.show()
 
 
-if ( __name__ == '__main__' ):
+if  __name__ == '__main__':
     main()
 

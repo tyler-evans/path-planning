@@ -1,36 +1,22 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import copy
 
-from Environment.Environment import PathPlanningProblem
 from CellDecomposition.CellDecomposition import QuadTreeDecomposition
 from Search.AStarSearch import construct_search_nodes, A_star
-from Utils.Seed import Seed
+
+from Environment.Environment import Environment
 
 
 def main():
 
-    Seed()
-
     width = 10.0
     height = 10.0
+    num_objects = 15
 
-    pp = PathPlanningProblem( width, height, 15, 3.0, 3.0)
-    initial, goals = pp.CreateProblemInstance()
-    goal = goals[0]
-
-    fig, ax = plt.subplots(figsize=(5,5))
-    ax.set_xlim(0.0, width)
-    ax.set_ylim(0.0, height)
-
-    for o in pp.obstacles:
-        ax.add_patch(copy.copy(o.patch) )
-    ip = plt.Rectangle((initial[0],initial[1]), 0.1, 0.1, facecolor='#ff0000')
-    ax.add_patch(ip)
-
-    for g in goals:
-        g = plt.Rectangle((g[0],g[1]), 0.1, 0.1, facecolor='#00ff00')
-        ax.add_patch(g)
+    environment = Environment(width, height, num_objects, 3.0, 3.0)
+    ax = environment.ax
+    pp = environment.problem
+    initial, goal = environment.initial, environment.goal
 
     qtd = QuadTreeDecomposition(pp, 0.1) # 0.2
     qtd.Draw(ax)
@@ -64,7 +50,7 @@ def main():
     plt.show()
 
 
-if ( __name__ == '__main__' ):
+if __name__ == '__main__' :
     main()
 
 

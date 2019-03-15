@@ -61,9 +61,9 @@ def construct_search_nodes(rectangle_list, initial_rec, goal_rec):
         node = SearchNode(rec)
         search_nodes.append(node)
 
-        if rec.ContainsPoint(*goal_rec):
+        if rec.contains_point(*goal_rec):
             goal_node = node
-        if rec.ContainsPoint(*initial_rec):
+        if rec.contains_point(*initial_rec):
             initial_node = node
 
     n = len(search_nodes)
@@ -72,7 +72,7 @@ def construct_search_nodes(rectangle_list, initial_rec, goal_rec):
             node_i = search_nodes[i]
             node_j = search_nodes[j]
 
-            if node_i.rectangle.SharesEdge(node_j.rectangle):
+            if node_i.rectangle.shares_edge(node_j.rectangle):
                 node_i.add_adjacent(node_j)
                 node_j.add_adjacent(node_i)
 

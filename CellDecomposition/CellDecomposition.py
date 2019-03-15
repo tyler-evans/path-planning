@@ -70,10 +70,10 @@ class QuadTreeDecomposition(CellDecomposition):
         rheight = r.height
 
         for o in self.domain.obstacles:
-            if ( o.CalculateOverlap(r) >= rwidth * rheight ):
+            if ( o.calculate_overlap(r) >= rwidth * rheight):
                 cell = 'obstacle'
                 break
-            elif ( o.CalculateOverlap(r) > 0.0 ):
+            elif (o.calculate_overlap(r) > 0.0):
                 cell = 'mixed'
                 break
         if ( cell == 'mixed'):

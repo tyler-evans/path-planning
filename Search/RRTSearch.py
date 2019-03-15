@@ -27,7 +27,7 @@ def ExploreDomain( domain, initial, goal, num_steps, ax=None, goal_prob=0.5, ste
         new_point = np.clip(new_point, 0.0, domain.width)
 
         rec = Rectangle(*new_point, 0.1, 0.1)
-        if not domain.CheckOverlap(rec):
+        if not domain.check_overlap(rec):
             vertices[i] = new_point
             edges[i] = nearest_neighbor_idx
 
