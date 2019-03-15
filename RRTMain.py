@@ -1,22 +1,15 @@
-import sys
 import matplotlib.pyplot as plt
 from matplotlib.animation import ArtistAnimation
 import numpy as np
 from Environment.Environment import PathPlanningProblem
-import random
 
 from Search.RRTSearch import ExploreDomain
+from Utils.Seed import Seed
 
 
-def main( argv = None ):
+def main():
 
-    seed = np.random.randint(4190)
-    print('Random seed:', seed)
-    random.seed(seed)
-    np.random.seed(seed)
-
-    if ( argv == None ):
-        argv = sys.argv[1:]
+    Seed()
 
     width = 10.0
     height = 10.0

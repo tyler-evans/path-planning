@@ -1,24 +1,16 @@
-from CellDecomposition.CellDecomposition import QuadTreeDecomposition
-
-
-import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import copy
-import random
 
 from Environment.Environment import PathPlanningProblem
+from CellDecomposition.CellDecomposition import QuadTreeDecomposition
 from Search.AStarSearch import construct_search_nodes, A_star
+from Utils.Seed import Seed
 
-def main( argv = None ):
 
-    if ( argv == None ):
-        argv = sys.argv[1:]
+def main():
 
-    seed = np.random.randint(4190)
-    print('Random seed:', seed)
-    random.seed(seed)
-    np.random.seed(seed)
+    Seed()
 
     width = 10.0
     height = 10.0
