@@ -4,48 +4,61 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 
+
 class Rectangle:
+
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.center_x = x+0.5*width
+        self.center_y = y+0.5*height
+        self.center = np.array([self.center_x, self.center_y])
+
+    def CalculateXOverlap(self, obs):
+        min = np.min((self.x, obs.x))
+        max = np.max((obs.x + obs.width, self.x + self.width))
+        return (max - min) - (self.width + obs.width)
+
+    def CalculateYOverlap(self, obs):
+        min = np.min((self.y, obs.y))
+        max = np.max((obs.y + obs.height, self.y + self.height))
+        return (max - min) - (self.height + obs.height)
 
     def CalculateOverlap(self, obs):
-        #print('CalculateOverlap {0},{1}->{2},{3} with {4},{5}->{6},{7}'.format(self.x, self.y, self.x + self.width, self.y+self.height, obs.x, obs.y, obs.x + obs.width, obs.y + obs.height) )
-        if ( self.x < obs.x ):
-            min = self.x
-        else:
-            min = obs.x
-        if ( ( self.x + self.width ) < ( obs.x + obs.width ) ):
-            max = obs.x + obs.width
-        else:
-            max = self.x + self.width
-        overlapX = ( max - min ) - ( self.width + obs.width )
-        #print('CalculateOverlap max', max, 'min', min, 'overlapX', overlapX)
-        if ( self.y < obs.y ):
-            min = self.y
-        else:
-            min = obs.y
-        if ( ( self.y + self.height ) < ( obs.y + obs.height ) ):
-            max = obs.y + obs.height
-        else:
-            max = self.y + self.height
-        overlapY =  ( max - min ) - ( self.height + obs.height )
-        #print('CalculateOverlap max', max, 'min', min, 'overlapY', overlapY)
+        overlapX = self.CalculateXOverlap(obs)
+        overlapY = self.CalculateYOverlap(obs)
+
         if ( overlapX < 0 ) and (overlapY < 0 ):
             overlap = overlapX * overlapY
         else:
             overlap = 0.0
-        #print('CalculateOverlap returns {0}'.format(overlap))
+
         return overlap
+
+    def SharesEdge(self, rec):
+        overlapX = self.CalculateXOverlap(rec)
+        overlapY = self.CalculateYOverlap(rec)
+
+        share_vertical_edge = (overlapX == 0) and (overlapY < 0)
+        share_horizontal_edge = (overlapY == 0) and (overlapX < 0)
+
+        return share_vertical_edge or share_horizontal_edge
+
+    def ContainsPoint(self, x, y):
+        return all([self.x <= x,
+                    x < self.x + self.width,
+                    self.y <= y,
+                    y < self.y + self.height])
+
 
 class Obstacle(Rectangle):
     def __init__(self, x, y, width, height, color = None ):
         super().__init__( x, y, width, height)
         self.color = color
         if ( color is not None ):
-            self.patch = plt.Rectangle((self.x, self.y), self.width, self.height, facecolor=color, edgecolor='#202020')
+            self.patch = plt.Rectangle((self.x, self.y), self.width, self.height, facecolor=color, edgecolor='#202020', alpha=0.6)
 
 class PathPlanningProblem:
     def __init__(self, width, height, onum, owidth, oheight):

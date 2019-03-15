@@ -5,9 +5,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 import copy
+import random
+from collections import defaultdict
 from pathplanning import PathPlanningProblem, Rectangle
 
+from matplotlib.animation import FuncAnimation
+
+
+class SearchNode:
+
+    def __init__(self, rectangle):
+        self.rectangle = rectangle
+        self.adjacent_nodes = set()
+
+    def add_adjacent(self, other_node):
+        self.adjacent_nodes.add(other_node)
+
+
 class CellDecomposition:
+
     def __init__(self, domain, minimumSize):
         self.domain = domain
         self.minimumSize = minimumSize
@@ -23,7 +39,7 @@ class CellDecomposition:
                     r.set_fill(True)
                     r.set_facecolor(color)
             elif ( node[1] == 'free' ):
-                color = '#ffff00'
+                color = '#ffffff'
                 r.set_fill(True)
                 r.set_facecolor(color)
             elif ( node[1] == 'obstacle'):
@@ -34,6 +50,7 @@ class CellDecomposition:
                 print("Error: don't know how to draw cell of type", node[1])
             #print('Draw node', node)
             ax.add_patch(r)
+            #ax.scatter(node[0].center_x, node[0].center_y, color='k', s=1, alpha=1.0)
             for c in node[2]:
                 self.Draw(ax, c)
 
@@ -165,7 +182,89 @@ class BinarySpacePartitioning(CellDecomposition):
         node[1] = cell
         return node
 
+def get_leaf_nodes(root):
+    children = root[2]
+    if root[1] == 'free':
+        return [root[0]]
+    else:
+        return sum([get_leaf_nodes(child) for child in children], [])
+
+
+
+
+def A_star(start, goal, ax=None):
+
+    visited_nodes = [] # for animation
+
+    def heuristic(node_0, node_1):
+        rec_0 = node_0.rectangle
+        rec_1 = node_1.rectangle
+
+        return np.sqrt(np.sum((rec_0.center - rec_1.center) ** 2))
+
+    def dist_between(node_0, node_1):
+        rec_0 = node_0.rectangle
+        rec_1 = node_1.rectangle
+
+        return np.sqrt(np.sum((rec_0.center - rec_1.center) ** 2))
+
+    def reconstruct_path(came_from, current):
+        total_path = [current]
+        while current in came_from:
+            current = came_from[current]
+            total_path.append(current)
+        return total_path
+
+    closed_set = set()
+    open_set = {start}
+
+    came_from = dict()
+
+    g_score = defaultdict(lambda: 1e6)
+    g_score[start] = 0
+
+    f_score = defaultdict(lambda: 1e6)
+    f_score[start] = heuristic(start, goal)
+
+    while open_set:
+        current = sorted(open_set, key=lambda node: f_score[node])[0]
+        visited_nodes.append(current)
+
+        # if ax:
+        #     ax.scatter(current.rectangle.center_x, current.rectangle.center_y, color='k', s=1)
+        #     plt.pause(0.001)
+
+        if current == goal:
+            return reconstruct_path(came_from, current), visited_nodes
+
+        open_set.remove(current)
+        closed_set.add(current)
+
+        for neighbor in current.adjacent_nodes:
+            if neighbor in closed_set:
+                continue
+
+            tentative_g_score = g_score[current] + dist_between(current, neighbor)
+
+            if neighbor not in open_set:
+                open_set.add(neighbor)
+            elif tentative_g_score >= g_score[neighbor]:
+                continue
+
+            came_from[neighbor] = current
+            g_score[neighbor] = tentative_g_score
+            f_score[neighbor] = g_score[neighbor] + heuristic(neighbor, goal)
+
+
+
+
 def main( argv = None ):
+
+    seed = random.randrange(4190)
+    random.Random(seed)
+    np.random.seed(seed)
+    print(seed)
+
     if ( argv == None ):
         argv = sys.argv[1:]
 
@@ -176,8 +275,9 @@ def main( argv = None ):
     #pp.obstacles = [ Obstacle(0.0, 0.0, pp.width, pp.height / 2.2, '#555555' ) ]
     initial, goals = pp.CreateProblemInstance()
 
-    fig = plt.figure()
-    ax = fig.add_subplot(1,2,1, aspect='equal')
+    #fig = plt.figure()
+    fig, ax = plt.subplots(figsize=(5,5))
+    #ax = fig.add_subplot(1,2,1, aspect='equal')
     ax.set_xlim(0.0, width)
     ax.set_ylim(0.0, height)
 
@@ -190,30 +290,80 @@ def main( argv = None ):
         g = plt.Rectangle((g[0],g[1]), 0.1, 0.1, facecolor='#00ff00')
         ax.add_patch(g)
 
-    qtd = QuadTreeDecomposition(pp, 0.2)
+    qtd = QuadTreeDecomposition(pp, 0.1) # 0.2
     qtd.Draw(ax)
     n = qtd.CountCells()
     ax.set_title('Quadtree Decomposition\n{0} cells'.format(n))
 
-    ax = fig.add_subplot(1,2,2, aspect='equal')
-    ax.set_xlim(0.0, width)
-    ax.set_ylim(0.0, height)
+    result = get_leaf_nodes(qtd.root)
+    #plt.pause(0.1)
+    search_nodes = []
+    initial_node, goal_node = None, None
+    for rec in result:
+        #ax.scatter(rec.center_x, rec.center_y, color='k', s=1, alpha=1.0)
+        node = SearchNode(rec)
+        search_nodes.append(node)
 
-    for o in pp.obstacles:
-        ax.add_patch(copy.copy(o.patch))
-    ip = plt.Rectangle((initial[0],initial[1]), 0.1, 0.1, facecolor='#ff0000')
-    ax.add_patch(ip)
+        if rec.ContainsPoint(*goals[0]):
+            ax.scatter(rec.center_x, rec.center_y, color='#00ff00', s=1)
+            goal_node = node
 
-    for g in goals:
-        g = plt.Rectangle((g[0],g[1]), 0.1, 0.1, facecolor='#00ff00')
-        ax.add_patch(g)
+        if rec.ContainsPoint(*initial):
+            ax.scatter(rec.center_x, rec.center_y, color='#ff0000', s=1)
+            initial_node = node
 
-    bsp = BinarySpacePartitioning(pp, 0.2)
-    bsp.Draw(ax)
-    n = bsp.CountCells()
-    ax.set_title('BSP Decomposition\n{0} cells'.format(n))
+        #plt.pause(0.001)
+
+    n = len(search_nodes)
+    for i in range(n):
+        for j in range(i+1, n):
+            node_i = search_nodes[i]
+            node_j = search_nodes[j]
+
+            if node_i.rectangle.SharesEdge(node_j.rectangle):
+                node_i.add_adjacent(node_j)
+                node_j.add_adjacent(node_i)
+
+
+    if initial_node and goal_node:
+        print('solving...', end=' ')
+        path, visited = A_star(initial_node, goal_node, ax=None)
+        print('done!')
+        if result is None:
+            print('no solution!')
+    else:
+        print('bad nodes')
+        print(initial_node)
+        print(goal_node)
+        exit(1)
+
+
+
+    # def update(i):
+    #     #for node in visited:
+    #     rec = visited[i].rectangle
+    #     ax.scatter(rec.center_x, rec.center_y, color='k', s=1, alpha=1.0)
+    #     # plt.pause(0.001)
+    #     return ax
+    #
+    # print('animating...', end=' ')
+    # gif = FuncAnimation(fig, update, frames=range(len(visited)), interval=10)
+    # print('done!')
+    # print('saving...', end=' ')
+    # gif.save('test.gif', dpi=120, writer='imagemagick')
+    # print('done!')
+    # #plt.show()
+
+    for node in visited:
+        rec = node.rectangle
+        ax.scatter(rec.center_x, rec.center_y, color='k', s=1, alpha=1.0)
+        plt.pause(0.001)
+
+    path_coords = np.array([node.rectangle.center for node in path])
+    ax.plot(*path_coords.T, 'r-')
 
     plt.show()
+
 
 if ( __name__ == '__main__' ):
     main()
