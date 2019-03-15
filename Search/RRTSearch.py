@@ -3,7 +3,7 @@ import numpy as np
 from Environment.Environment import Rectangle
 
 
-def ExploreDomain( domain, initial, goal, num_steps, goal_prob=0.5, step_size=0.1, ax=None):
+def explore_domain(domain, initial, goal, num_steps, goal_prob=0.5, step_size=0.1, ax=None):
 
     vertices = np.zeros((num_steps, 2))
     vertices[0] = np.array(initial)
@@ -34,7 +34,7 @@ def ExploreDomain( domain, initial, goal, num_steps, goal_prob=0.5, step_size=0.
             if ax:
                 images.append(ax.scatter(*new_point, color='r', s=1))
 
-            if np.linalg.norm(goal - new_point) < step_size:
+            if np.linalg.norm(goal - new_point) < step_size:  # found it
                 return vertices[:i], edges, images
         else:
             vertices[i] = nearest_neighbor

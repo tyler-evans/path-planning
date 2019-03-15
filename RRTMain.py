@@ -3,19 +3,19 @@ from matplotlib.animation import ArtistAnimation
 import numpy as np
 from Environment.Environment import Environment
 
-from Search.RRTSearch import ExploreDomain
+from Search.RRTSearch import explore_domain
 
 
 def main():
 
-    width = 10.0
-    height = 10.0
+    problem_size = 10.0
     num_objects = 10
+    min_obj_size, max_obj_size = 0.1, 4.0
     max_num_steps = 5000
 
-    env = Environment(width, height, num_objects, 4.0, 4.0)
+    env = Environment(problem_size, num_objects, min_obj_size, max_obj_size)
 
-    vertices, edges, images = ExploreDomain(env.problem, env.initial, env.goal, max_num_steps, goal_prob=0.5, ax=env.ax)
+    vertices, edges, images = explore_domain(env.problem, env.initial, env.goal, max_num_steps, goal_prob=0.5, ax=env.ax)
 
     images.append(env.ax.scatter(*vertices.T, s=1))
 

@@ -63,19 +63,19 @@ class Obstacle(Rectangle):
 
 
 class PathPlanningProblem:
-    def __init__(self, width, height, onum, owidth, oheight):
-        self.width = width
-        self.height = height
-        self.obstacles = self.create_obstacles(onum, owidth, oheight)
+    def __init__(self, problem_size, num_objects, min_obj_size, max_obj_size):
+        self.width = problem_size
+        self.height = problem_size
+        self.obstacles = self.create_obstacles(num_objects, min_obj_size, max_obj_size)
 
-    def create_obstacles(self, onum, owidth, oheight):
+    def create_obstacles(self, num_objects, min_obj_size, max_obj_size):
         obstacles = []
 
-        while len(obstacles) < onum:
+        while len(obstacles) < num_objects:
             x = random.uniform(0.0, self.width)
             y = random.uniform(0.0, self.height)
-            w = random.uniform(0.1, owidth)
-            h = random.uniform(0.1, oheight)
+            w = random.uniform(min_obj_size, max_obj_size)
+            h = random.uniform(min_obj_size, max_obj_size)
             if (x + w) > self.width:
                 w = self.width - x
             if (y + h) > self.height:
@@ -140,23 +140,23 @@ class PathPlanningProblem:
 
 class Environment:
 
-    def __init__(self, width, height, num_objects, min_object_size, max_object_size, seed=None):
+    def __init__(self, problem_size, num_objects, min_obj_size, max_obj_size, seed=None):
 
         Seed(seed)
 
-        self.width = width
-        self.height = height
+        self.width = problem_size
+        self.height = problem_size
         self.num_objects = num_objects
-        self.min_object_size = min_object_size
-        self.max_object_size = max_object_size
+        self.min_object_size = min_obj_size
+        self.max_object_size = max_obj_size
 
         # TODO accept min and max object sizes
-        self.problem = PathPlanningProblem(width, height, self.num_objects, self.max_object_size, self.max_object_size)
+        self.problem = PathPlanningProblem(problem_size, num_objects, min_obj_size, max_obj_size)
         self.initial, self.goal = self.problem.create_problem_instance()
 
         self.fig, self.ax = plt.subplots(figsize=(8, 8))
-        self.ax.set_xlim(0.0, width)
-        self.ax.set_ylim(0.0, height)
+        self.ax.set_xlim(0.0, self.width)
+        self.ax.set_ylim(0.0, self.height)
 
         for o in self.problem.obstacles:
             self.ax.add_patch(o.patch)

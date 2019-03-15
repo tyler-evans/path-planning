@@ -9,12 +9,12 @@ from Environment.Environment import Environment
 
 def main():
 
-    width = 10.0
-    height = 10.0
+    problem_size = 10.0
     num_objects = 15
+    min_obj_size, max_obj_size = 0.1, 3.0
     decomposition_resolution = 0.1
 
-    env = Environment(width, height, num_objects, 3.0, 3.0)
+    env = Environment(problem_size, num_objects, min_obj_size, max_obj_size)
 
     decomposition = QuadTreeDecomposition(env.problem, decomposition_resolution)
     decomposition.Draw(env.ax)
