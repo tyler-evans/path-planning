@@ -23,12 +23,6 @@ def main():
     free_nodes = decomposition.get_leaf_nodes(decomposition.root)
     search_nodes, initial_node, goal_node = construct_search_nodes(free_nodes, env.initial, env.goal)
 
-    # TODO: fix this behavior
-    if not(initial_node and goal_node):
-        print('bad initial or goal nodes (spawned on mixed tile)')
-        plt.show()
-        exit(1)
-
     print('solving...', end=' ')
     path, vertices = A_star(initial_node, goal_node)
     if path is None:

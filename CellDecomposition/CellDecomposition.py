@@ -28,11 +28,8 @@ class CellDecomposition:
                 color = '#5050ff'
                 r.set_fill(True)
                 r.set_facecolor(color)
-            else:
-                print("Error: don't know how to draw cell of type", node[1])
-            #print('Draw node', node)
+
             ax.add_patch(r)
-            #ax.scatter(node[0].center_x, node[0].center_y, color='k', s=1, alpha=1.0)
             for c in node[2]:
                 self.Draw(ax, c)
 
@@ -53,7 +50,7 @@ class CellDecomposition:
 
     def get_leaf_nodes(self, root):
         children = root[2]
-        if root[1] == 'free':
+        if root[1] == 'free' or (root[1] == 'minimum' and root[0].height/2 <= self.minimumSize):
             return [root[0]]
         else:
             return sum([self.get_leaf_nodes(child) for child in children], [])
@@ -92,6 +89,6 @@ class QuadTreeDecomposition(CellDecomposition):
                 children = [ qchild1, qchild2, qchild3, qchild4 ]
                 node[2] = children
             else:
-                cell = 'obstacle'
+                cell = 'minimum'
         node[1] = cell
         return node
