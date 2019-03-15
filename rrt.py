@@ -2,49 +2,10 @@ import sys
 import matplotlib.pyplot as plt
 from matplotlib.animation import ArtistAnimation
 import numpy as np
-from pathplanning import PathPlanningProblem, Rectangle
+from Environment.Environment import PathPlanningProblem
 import random
 
-
-
-def ExploreDomain( domain, initial, goal, num_steps, ax=None, goal_prob=0.5, step_size=0.1):
-
-    vertices = np.zeros((num_steps, 2))
-    vertices[0] = np.array(initial)
-    edges = dict()
-
-    images = []
-
-    for i in range(1, num_steps):
-
-        sample_point = np.random.uniform(0, domain.width, size=2)
-        if np.random.rand() < goal_prob:
-            sample_point = goal
-
-        nearest_neighbor_idx = np.argmin(np.sum((vertices[:i] - sample_point)**2, axis=1))
-        nearest_neighbor = vertices[nearest_neighbor_idx]
-
-        direction = sample_point - nearest_neighbor
-        direction /= np.linalg.norm(direction)
-
-        new_point = nearest_neighbor + step_size*direction
-        new_point = np.clip(new_point, 0.0, domain.width)
-
-        rec = Rectangle(*new_point, 0.1, 0.1)
-        if not domain.CheckOverlap(rec):
-            vertices[i] = new_point
-            edges[i] = nearest_neighbor_idx
-
-            if ax:
-                images.append(ax.scatter(*new_point, color='r', s=1))
-                #plt.pause(0.0001)
-
-            if np.linalg.norm(goal - new_point) < step_size:
-                return vertices[:i], edges, images
-        else:
-            vertices[i] = nearest_neighbor
-
-    return vertices, edges, images
+from Search.RRTSearch import ExploreDomain
 
 
 def main( argv = None ):
@@ -82,7 +43,7 @@ def main( argv = None ):
 
     num_steps = 5000
     goal = goals[0]
-    vertices, edges, images = ExploreDomain( pp, initial, goal, num_steps, ax=ax, goal_prob=0.4)
+    vertices, edges, images = ExploreDomain(pp, initial, goal, num_steps, ax=ax, goal_prob=0.4)
 
     images.append(ax.scatter(*vertices.T, s=1))
 
@@ -108,24 +69,6 @@ def main( argv = None ):
     animation = ArtistAnimation(fig, [images[:i] for i in range(1, len(images)+1)], interval=1, blit=True, repeat=False)
     plt.show()
 
-
-
-
-#     ax = fig.add_subplot(1,2,2)
-# #    x,y,z = pp.CalculateCoverage(path, 0.5)
-#
-# #    X,Y = np.meshgrid(x,y)
-# #    Z = z
-# #    ax.plot_surface(X,Y,Z, rstride=1, cstride=1, cmap=cm.coolwarm)
-#
-#     heatmap, x, y = np.histogram2d(path[:,0], path[:,1], bins = 50, range=[[0.0, pp.width], [0.0, pp.height]])
-#     coverage = float( np.count_nonzero(heatmap) ) / float( len(heatmap) * len(heatmap[0]))
-#     extent = [ x[0], x[-1], y[0], y[-1]]
-#     ax.set_title('Random Walk\nCoverage {0}'.format(coverage))
-#     plt.imshow(np.rot90(heatmap))
-#     plt.colorbar()
-#
-#     plt.show()
 
 if ( __name__ == '__main__' ):
     main()

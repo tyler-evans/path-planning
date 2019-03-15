@@ -60,6 +60,7 @@ class Obstacle(Rectangle):
         if ( color is not None ):
             self.patch = plt.Rectangle((self.x, self.y), self.width, self.height, facecolor=color, edgecolor='#202020', alpha=0.6)
 
+
 class PathPlanningProblem:
     def __init__(self, width, height, onum, owidth, oheight):
         self.width = width
