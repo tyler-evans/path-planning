@@ -64,6 +64,7 @@ class Obstacle(Rectangle):
 
 class PathPlanningProblem:
     def __init__(self, problem_size, num_objects, min_obj_size, max_obj_size):
+        self.problem_size = problem_size
         self.width = problem_size
         self.height = problem_size
         self.obstacles = self.create_obstacles(num_objects, min_obj_size, max_obj_size)
@@ -72,10 +73,10 @@ class PathPlanningProblem:
         obstacles = []
 
         while len(obstacles) < num_objects:
-            x = random.uniform(0.0, self.width)
-            y = random.uniform(0.0, self.height)
-            w = random.uniform(min_obj_size, max_obj_size)
-            h = random.uniform(min_obj_size, max_obj_size)
+            x = np.random.randint(self.width)
+            y = np.random.randint(self.height)
+            w = np.random.randint(min_obj_size, max_obj_size+1)
+            h = np.random.randint(min_obj_size, max_obj_size+1)
             if (x + w) > self.width:
                 w = self.width - x
             if (y + h) > self.height:
@@ -93,8 +94,8 @@ class PathPlanningProblem:
     def create_problem_instance(self):
         found = False
         while not found:
-            ix = random.uniform(0.0, self.width)
-            iy = random.uniform(0.0, self.height)
+            ix = np.random.randint(self.width+1)
+            iy = np.random.randint(self.height+1)
 
             oinitial = Obstacle(ix, iy, 0.1, 0.1)
             found = True
@@ -105,8 +106,8 @@ class PathPlanningProblem:
 
         found = False
         while not found:
-            gx = random.uniform(0.0, self.width)
-            gy = random.uniform(0.0, self.height)
+            gx = np.random.randint(self.width+1)
+            gy = np.random.randint(self.height+1)
 
             ogoal = Obstacle(gx, gy, 0.1, 0.1)
             found = True
@@ -140,7 +141,7 @@ class PathPlanningProblem:
 
 class Environment:
 
-    def __init__(self, problem_size, num_objects, min_obj_size, max_obj_size, seed=None):
+    def __init__(self, problem_size, num_objects, min_obj_size, max_obj_size, grid=True, seed=None):
 
         Seed(seed)
 
@@ -150,7 +151,6 @@ class Environment:
         self.min_object_size = min_obj_size
         self.max_object_size = max_obj_size
 
-        # TODO accept min and max object sizes
         self.problem = PathPlanningProblem(problem_size, num_objects, min_obj_size, max_obj_size)
         self.initial, self.goal = self.problem.create_problem_instance()
 
@@ -158,11 +158,17 @@ class Environment:
         self.ax.set_xlim(0.0, self.width)
         self.ax.set_ylim(0.0, self.height)
 
+        if grid:
+            ticks = np.arange(0, problem_size+1, 1)
+            self.ax.set_xticks(ticks, minor=True)
+            self.ax.set_yticks(ticks, minor=True)
+            plt.grid(which='minor', alpha=0.4)
+
         for o in self.problem.obstacles:
             self.ax.add_patch(o.patch)
 
-        ip = plt.Rectangle((self.initial[0], self.initial[1]), 0.1, 0.1, facecolor='#ff0000')
+        ip = plt.Rectangle((self.initial[0], self.initial[1]), 1.0, 1.0, facecolor='#ff0000')
         self.ax.add_patch(ip)
 
-        g = plt.Rectangle((self.goal[0], self.goal[1]), 0.1, 0.1, facecolor='#00ff00')
+        g = plt.Rectangle((self.goal[0], self.goal[1]), 1.0, 1.0, facecolor='#00ff00')
         self.ax.add_patch(g)

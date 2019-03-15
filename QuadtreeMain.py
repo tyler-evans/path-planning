@@ -1,20 +1,20 @@
 import matplotlib.pyplot as plt
-import numpy as np
 
 from CellDecomposition.CellDecomposition import QuadTreeDecomposition
 from Search.AStarSearch import construct_search_nodes, A_star
-
 from Environment.Environment import Environment
+from Utils.DisplayPlot import DisplayPlot, DisplayType
 
 
 def main():
 
-    problem_size = 10.0
-    num_objects = 15
-    min_obj_size, max_obj_size = 0.1, 3.0
-    decomposition_resolution = 0.1
+    problem_size = 100
+    num_objects = 10
+    min_obj_size, max_obj_size = 10, 50
+    decomposition_resolution = 1.0
+    display_type = DisplayType.ANIMATE
 
-    env = Environment(problem_size, num_objects, min_obj_size, max_obj_size)
+    env = Environment(problem_size, num_objects, min_obj_size, max_obj_size, grid=False)
 
     decomposition = QuadTreeDecomposition(env.problem, decomposition_resolution)
     decomposition.Draw(env.ax)
@@ -22,28 +22,19 @@ def main():
     free_nodes = decomposition.get_leaf_nodes(decomposition.root)
     search_nodes, initial_node, goal_node = construct_search_nodes(free_nodes, env.initial, env.goal)
 
-    #ax.scatter(initial_node.rectangle.center_x, initial_node.rectangle.center_y, color='#00ff00', s=1)
-    #ax.scatter(goal_node.rectangle.center_x, goal_node.rectangle.center_y, color='#00ff00', s=1)
-
     if not(initial_node and goal_node):
         print('bad initial or goal nodes (spawned on mixed tile)')
+        plt.show()
         exit(1)
 
     print('solving...', end=' ')
-    path, visited = A_star(initial_node, goal_node)
-    print('done!')
+    path, vertices = A_star(initial_node, goal_node)
     if path is None:
         print('no solution!')
-
-    for node in visited:
-        rec = node.rectangle
-        env.ax.scatter(rec.center_x, rec.center_y, color='k', s=1, alpha=1.0)
-        plt.pause(0.001)
-
-    path_coords = np.array([node.rectangle.center for node in path])
-    env.ax.plot(*path_coords.T, 'r-')
-
-    plt.show()
+    else:
+        print('solution found!')
+        display = DisplayPlot(display_type, env)
+        display.show(vertices, path)
 
 
 if __name__ == '__main__' :

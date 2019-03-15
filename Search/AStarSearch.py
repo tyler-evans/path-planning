@@ -29,10 +29,10 @@ def A_star(start, goal):
 
     while open_set:
         current = sorted(open_set, key=lambda node: f_score[node])[0]
-        visited_nodes.append(current)
+        visited_nodes.append(current.rectangle.center)
 
         if current == goal:
-            return reconstruct_path(came_from, current), visited_nodes
+            return reconstruct_path(came_from, current), np.array(visited_nodes)
 
         open_set.remove(current)
         closed_set.add(current)
@@ -51,6 +51,8 @@ def A_star(start, goal):
             came_from[neighbor] = current
             g_score[neighbor] = tentative_g_score
             f_score[neighbor] = g_score[neighbor] + heuristic(neighbor, goal)
+
+    return None, np.array(visited_nodes)
 
 
 def construct_search_nodes(rectangle_list, initial_rec, goal_rec):
@@ -94,8 +96,8 @@ def dist_between(node_0, node_1):
 
 
 def reconstruct_path(came_from, current):
-    total_path = [current]
+    total_path = [current.rectangle.center]
     while current in came_from:
         current = came_from[current]
-        total_path.append(current)
-    return total_path
+        total_path.append(current.rectangle.center)
+    return np.array(total_path)

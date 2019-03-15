@@ -3,17 +3,15 @@ import numpy as np
 from Environment.Environment import Rectangle
 
 
-def explore_domain(domain, initial, goal, num_steps, goal_prob=0.5, step_size=0.1, ax=None):
+def explore_domain(domain, initial, goal, num_steps, goal_prob=0.5, step_size=0.1):
 
     vertices = np.zeros((num_steps, 2))
     vertices[0] = np.array(initial)
     edges = dict()
 
-    images = []
-
     for i in range(1, num_steps):
 
-        sample_point = np.random.uniform(0, domain.width, size=2)
+        sample_point = np.random.uniform(domain.problem_size, size=2)
         if np.random.rand() < goal_prob:
             sample_point = goal
 
@@ -24,19 +22,16 @@ def explore_domain(domain, initial, goal, num_steps, goal_prob=0.5, step_size=0.
         direction /= np.linalg.norm(direction)
 
         new_point = nearest_neighbor + step_size*direction
-        new_point = np.clip(new_point, 0.0, domain.width)
+        new_point = np.clip(new_point, 0, domain.problem_size)
 
         rec = Rectangle(*new_point, 0.1, 0.1)
         if not domain.check_overlap(rec):
             vertices[i] = new_point
             edges[i] = nearest_neighbor_idx
 
-            if ax:
-                images.append(ax.scatter(*new_point, color='r', s=1))
-
             if np.linalg.norm(goal - new_point) < step_size:  # found it
-                return vertices[:i], edges, images
+                return vertices[:i], edges
         else:
             vertices[i] = nearest_neighbor
 
-    return vertices, edges, images
+    return vertices, edges

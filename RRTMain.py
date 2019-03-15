@@ -1,23 +1,22 @@
-import matplotlib.pyplot as plt
-from matplotlib.animation import ArtistAnimation
 import numpy as np
-from Environment.Environment import Environment
 
+from Environment.Environment import Environment
 from Search.RRTSearch import explore_domain
+from Utils.DisplayPlot import DisplayPlot, DisplayType
 
 
 def main():
 
-    problem_size = 10.0
+    problem_size = 100
     num_objects = 10
-    min_obj_size, max_obj_size = 0.1, 4.0
-    max_num_steps = 5000
+    min_obj_size, max_obj_size = 10, 50
+    max_num_steps = 10000
+    step_size = 1
+    display_type = DisplayType.ANIMATE
 
     env = Environment(problem_size, num_objects, min_obj_size, max_obj_size)
 
-    vertices, edges, images = explore_domain(env.problem, env.initial, env.goal, max_num_steps, goal_prob=0.5, ax=env.ax)
-
-    images.append(env.ax.scatter(*vertices.T, s=1))
+    vertices, edges = explore_domain(env.problem, env.initial, env.goal, max_num_steps, step_size=step_size, goal_prob=0.5)
 
     n = vertices.shape[0]
     if n < max_num_steps:
@@ -33,12 +32,12 @@ def main():
         path.append(np.array(env.goal))
         path = np.array(path)
 
-        images.append(env.ax.plot(*path.T, 'r-')[0])
+        display = DisplayPlot(display_type, env)
+        display.show(vertices, path)
+    elif n == max_num_steps:
+        print('max iterations reached')
     else:
-        print('no solution')
-
-    animation = ArtistAnimation(env.fig, [images[:i] for i in range(1, len(images)+1)], interval=1, blit=True, repeat=False)
-    plt.show()
+        print('no solution found')
 
 
 if __name__ == '__main__':
