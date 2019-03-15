@@ -36,6 +36,9 @@ class CellDecomposition:
             for c in node[2]:
                 self.Draw(ax, c)
 
+            n = self.CountCells()
+            ax.set_title('Quadtree Decomposition\n{0} cells'.format(n))
+
     def CountCells(self, node = None ):
         if ( node is None ):
             node = self.root

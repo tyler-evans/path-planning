@@ -12,22 +12,18 @@ def main():
     width = 10.0
     height = 10.0
     num_objects = 15
+    decomposition_resolution = 0.1
 
-    environment = Environment(width, height, num_objects, 3.0, 3.0)
-    ax = environment.ax
-    pp = environment.problem
-    initial, goal = environment.initial, environment.goal
+    env = Environment(width, height, num_objects, 3.0, 3.0)
 
-    qtd = QuadTreeDecomposition(pp, 0.1) # 0.2
-    qtd.Draw(ax)
-    n = qtd.CountCells()
-    ax.set_title('Quadtree Decomposition\n{0} cells'.format(n))
+    decomposition = QuadTreeDecomposition(env.problem, decomposition_resolution)
+    decomposition.Draw(env.ax)
 
-    free_nodes = qtd.get_leaf_nodes(qtd.root)
+    free_nodes = decomposition.get_leaf_nodes(decomposition.root)
+    search_nodes, initial_node, goal_node = construct_search_nodes(free_nodes, env.initial, env.goal)
 
-    search_nodes, initial_node, goal_node = construct_search_nodes(free_nodes, initial, goal)
-    ax.scatter(initial_node.rectangle.center_x, initial_node.rectangle.center_y, color='#00ff00', s=1)
-    ax.scatter(goal_node.rectangle.center_x, goal_node.rectangle.center_y, color='#00ff00', s=1)
+    #ax.scatter(initial_node.rectangle.center_x, initial_node.rectangle.center_y, color='#00ff00', s=1)
+    #ax.scatter(goal_node.rectangle.center_x, goal_node.rectangle.center_y, color='#00ff00', s=1)
 
     if not(initial_node and goal_node):
         print('bad initial or goal nodes (spawned on mixed tile)')
@@ -41,11 +37,11 @@ def main():
 
     for node in visited:
         rec = node.rectangle
-        ax.scatter(rec.center_x, rec.center_y, color='k', s=1, alpha=1.0)
+        env.ax.scatter(rec.center_x, rec.center_y, color='k', s=1, alpha=1.0)
         plt.pause(0.001)
 
     path_coords = np.array([node.rectangle.center for node in path])
-    ax.plot(*path_coords.T, 'r-')
+    env.ax.plot(*path_coords.T, 'r-')
 
     plt.show()
 

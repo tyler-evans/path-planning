@@ -11,20 +11,16 @@ def main():
     width = 10.0
     height = 10.0
     num_objects = 10
+    max_num_steps = 5000
 
-    environment = Environment(width, height, num_objects, 4.0, 4.0)
-    pp = environment.problem
-    initial, goal = environment.initial, environment.goal
-    ax = environment.ax
-    fig = environment.fig
+    env = Environment(width, height, num_objects, 4.0, 4.0)
 
-    num_steps = 5000
-    vertices, edges, images = ExploreDomain(pp, initial, goal, num_steps, ax=ax, goal_prob=0.4)
+    vertices, edges, images = ExploreDomain(env.problem, env.initial, env.goal, max_num_steps, goal_prob=0.5, ax=env.ax)
 
-    images.append(ax.scatter(*vertices.T, s=1))
+    images.append(env.ax.scatter(*vertices.T, s=1))
 
     n = vertices.shape[0]
-    if n < num_steps:
+    if n < max_num_steps:
         print('found it!')
 
         path = []
@@ -32,19 +28,19 @@ def main():
         while curr_node != 0:
             path.append(vertices[curr_node])
             curr_node = edges[curr_node]
-        path.append(np.array(initial))
+        path.append(np.array(env.initial))
         path.reverse()
-        path.append(np.array(goal))
+        path.append(np.array(env.goal))
         path = np.array(path)
 
-        images.append(ax.plot(*path.T, 'r-')[0])
+        images.append(env.ax.plot(*path.T, 'r-')[0])
     else:
         print('no solution')
 
-    animation = ArtistAnimation(fig, [images[:i] for i in range(1, len(images)+1)], interval=1, blit=True, repeat=False)
+    animation = ArtistAnimation(env.fig, [images[:i] for i in range(1, len(images)+1)], interval=1, blit=True, repeat=False)
     plt.show()
 
 
-if  __name__ == '__main__':
+if __name__ == '__main__':
     main()
 

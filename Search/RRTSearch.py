@@ -3,7 +3,7 @@ import numpy as np
 from Environment.Environment import Rectangle
 
 
-def ExploreDomain( domain, initial, goal, num_steps, ax=None, goal_prob=0.5, step_size=0.1):
+def ExploreDomain( domain, initial, goal, num_steps, goal_prob=0.5, step_size=0.1, ax=None):
 
     vertices = np.zeros((num_steps, 2))
     vertices[0] = np.array(initial)
