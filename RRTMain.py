@@ -27,9 +27,9 @@ def main():
         while curr_node != 0:
             path.append(vertices[curr_node])
             curr_node = edges[curr_node]
-        path.append(np.array(env.initial))
+        path.append(np.array(env.initial)+0.5)
         path.reverse()
-        path.append(np.array(env.goal))
+        path.append(np.array(env.goal)+0.5)
         path = np.array(path)
 
         display = DisplayPlot(display_type, env)

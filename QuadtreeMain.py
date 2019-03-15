@@ -1,3 +1,4 @@
+import numpy as np
 import matplotlib.pyplot as plt
 
 from CellDecomposition.CellDecomposition import QuadTreeDecomposition
@@ -22,6 +23,7 @@ def main():
     free_nodes = decomposition.get_leaf_nodes(decomposition.root)
     search_nodes, initial_node, goal_node = construct_search_nodes(free_nodes, env.initial, env.goal)
 
+    # TODO: fix this behavior
     if not(initial_node and goal_node):
         print('bad initial or goal nodes (spawned on mixed tile)')
         plt.show()
@@ -33,6 +35,8 @@ def main():
         print('no solution!')
     else:
         print('solution found!')
+        a, b = np.array(env.goal), np.array(env.initial)
+        path = np.vstack([a+0.5, path, b+0.5])
         display = DisplayPlot(display_type, env)
         display.show(vertices, path)
 
