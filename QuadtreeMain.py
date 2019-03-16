@@ -31,8 +31,9 @@ def main():
         print('solution found!')
         a, b = np.array(env.goal), np.array(env.initial)
         path = np.vstack([a+0.5, path, b+0.5])
-        display = DisplayPlot(display_type, env)
-        display.show(vertices, path)
+
+    display = DisplayPlot(display_type, env)
+    display.show(vertices, path if path is not None else np.array([]))
 
 
 if __name__ == '__main__' :
