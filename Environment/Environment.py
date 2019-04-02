@@ -37,19 +37,20 @@ class Rectangle:
         return overlap
 
     def shares_edge(self, rec):
-        overlapX = self.calculate_x_overlap(rec)
-        overlapY = self.calculate_y_overlap(rec)
-
-        share_vertical_edge = (overlapX == 0) and (overlapY < 0)
-        share_horizontal_edge = (overlapY == 0) and (overlapX < 0)
-
-        return share_vertical_edge or share_horizontal_edge
+        return any([
+            self.contains_point(rec.x, rec.y),
+            self.contains_point(rec.x+rec.width, rec.y),
+            self.contains_point(rec.x, rec.y+rec.height),
+            self.contains_point(rec.x+rec.width, rec.y+rec.height)
+        ])
 
     def contains_point(self, x, y):
-        return all([self.x <= x,
-                    x < self.x + self.width,
-                    self.y <= y,
-                    y < self.y + self.height])
+        return all([
+            self.x <= x,
+            x <= self.x + self.width,
+            self.y <= y,
+            y <= self.y + self.height
+        ])
 
 
 class Obstacle(Rectangle):
@@ -93,8 +94,8 @@ class PathPlanningProblem:
     def create_problem_instance(self):
         found = False
         while not found:
-            ix = np.random.randint(self.width+1)
-            iy = np.random.randint(self.height+1)
+            ix = np.random.randint(1, self.width)
+            iy = np.random.randint(1, self.height)
 
             oinitial = Obstacle(ix, iy, 0.1, 0.1)
             found = True
@@ -105,8 +106,8 @@ class PathPlanningProblem:
 
         found = False
         while not found:
-            gx = np.random.randint(self.width+1)
-            gy = np.random.randint(self.height+1)
+            gx = np.random.randint(1, self.width)
+            gy = np.random.randint(1, self.height)
 
             ogoal = Obstacle(gx, gy, 0.1, 0.1)
             found = True
