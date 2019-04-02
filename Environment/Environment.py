@@ -140,9 +140,13 @@ class PathPlanningProblem:
 
 class Environment:
 
+    map_id = 0
+
     def __init__(self, problem_size, num_objects, min_obj_size, max_obj_size, grid=True, seed=None):
 
         Seed(seed)
+        self.map_id = Environment.map_id
+        Environment.map_id += 1
 
         self.width = problem_size
         self.height = problem_size
@@ -152,16 +156,3 @@ class Environment:
 
         self.problem = PathPlanningProblem(problem_size, num_objects, min_obj_size, max_obj_size)
         self.initial, self.goal = self.problem.create_problem_instance()
-
-        self.fig, self.ax = plt.subplots(figsize=(8, 8))
-        self.ax.set_xlim(0.0, self.width)
-        self.ax.set_ylim(0.0, self.height)
-
-        for o in self.problem.obstacles:
-            self.ax.add_patch(o.patch)
-
-        ip = plt.Rectangle((self.initial[0], self.initial[1]), 1.0, 1.0, facecolor='#ff0000')
-        self.ax.add_patch(ip)
-
-        g = plt.Rectangle((self.goal[0], self.goal[1]), 1.0, 1.0, facecolor='#00ff00')
-        self.ax.add_patch(g)

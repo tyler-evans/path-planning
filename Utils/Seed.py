@@ -9,7 +9,6 @@ class Seed:
             print('Using existing seed:', seed)
         else:
             seed = np.random.randint(4190)
-            print('Using random seed:', seed)
 
         random.seed(seed)
         np.random.seed(seed)

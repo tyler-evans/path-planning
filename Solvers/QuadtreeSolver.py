@@ -28,6 +28,6 @@ class QuadtreeSolver:
     def show_solution(self):
         display = DisplayPlot(self.display_type, self.env)
         if self.display_type != DisplayType.NONE:
-            self.decomposition.Draw(self.env.ax)
+            self.decomposition.Draw(display.ax)
 
         display.show(self.vertices, self.path if self.path is not None else np.array([]))

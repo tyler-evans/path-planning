@@ -37,4 +37,4 @@ class RRTSolver:
 
     def show_solution(self):
         display = DisplayPlot(self.display_type, self.env, grid=True)
-        display.show(self.vertices, np.array(self.path))
+        display.show(self.vertices, self.path if self.path is not None else np.array([]))
