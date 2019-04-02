@@ -20,8 +20,14 @@ class QuadtreeSolver:
         self.path, self.vertices = A_star(self.initial_node, self.goal_node)
 
         if self.path is not None:
-            a, b = np.array(self.env.goal), np.array(self.env.initial)
-            self.path = np.vstack([a + 0.5, self.path, b + 0.5])
+            initial_center = np.array(self.env.initial)+0.5
+            goal_center = np.array(self.env.goal)+0.5
+            if self.path.shape[0] > 1:
+                self.path[-1] = initial_center
+                self.path[0] = goal_center
+            else:
+                self.path = np.array([initial_center, goal_center])
+
 
         return self.path
 
