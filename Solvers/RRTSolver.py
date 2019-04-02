@@ -6,17 +6,18 @@ from Utils.DisplayPlot import DisplayPlot
 
 class RRTSolver:
 
-    def __init__(self, env, step_size, max_num_steps, display_type):
+    def __init__(self, env, step_size, max_num_steps, display_type, goal_bias=0.5):
         self.env = env
         self.step_size = step_size
         self.max_num_steps = max_num_steps
+        self.goal_bias = goal_bias
         self.display_type = display_type
         self.exit_flag = None
         self.path = None
 
     def solve(self):
         self.vertices, edges = explore_domain(self.env.problem, self.env.initial, self.env.goal, self.max_num_steps,
-                                              step_size=self.step_size, goal_prob=0.5)
+                                              step_size=self.step_size, goal_prob=self.goal_bias)
 
         n = self.vertices.shape[0]
         path = []

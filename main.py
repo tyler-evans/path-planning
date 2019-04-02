@@ -16,6 +16,7 @@ def main():
     random_range_start, random_range_end = 111111111, 999999999
     all_num_obstacles = [1, 2, 4, 6]
     maps_per_number_of_obstacles = 1
+    goal_bias = 0.5
     problem_size = 100
     min_obj_size = 10
     max_obj_size_map = {1: 50, 2: 50, 4: 20, 6: 10}
@@ -75,7 +76,7 @@ def main():
             for step_size in all_step_sizes:
                 print('Solving Map: {} - Step Size: {}\t(Rapidly Exploring Random Tree)'.format(env.map_id, step_size))
                 timer = Timer()
-                rrt_solver = RRTSolver(env, step_size, max_num_steps, display_type)
+                rrt_solver = RRTSolver(env, step_size, max_num_steps, display_type, goal_bias=goal_bias)
                 path = rrt_solver.solve()
                 timer.end()
                 length = path_length(path)
