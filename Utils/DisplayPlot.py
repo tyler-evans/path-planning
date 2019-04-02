@@ -1,6 +1,7 @@
 from enum import Enum
 
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.animation import ArtistAnimation
 
 
@@ -12,11 +13,18 @@ class DisplayType(Enum):
 
 class DisplayPlot:
 
-    def __init__(self, display_type, env):
+    def __init__(self, display_type, env, grid=False):
         self.display_type = display_type
         self.env = env
+        self.grid = grid
 
     def show(self, vertices, path):
+        if self.grid:
+            ticks = np.arange(0, self.env.width+1, 1)
+            self.env.ax.set_xticks(ticks, minor=True)
+            self.env.ax.set_yticks(ticks, minor=True)
+            plt.grid(which='minor', alpha=0.4)
+
         if self.display_type == DisplayType.ANIMATE:
             images = [self.env.ax.scatter(*vertex, color='r', s=1) for vertex in vertices]
             images.append(self.env.ax.scatter(*vertices.T, s=1))

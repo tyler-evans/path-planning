@@ -157,12 +157,6 @@ class Environment:
         self.ax.set_xlim(0.0, self.width)
         self.ax.set_ylim(0.0, self.height)
 
-        if grid:
-            ticks = np.arange(0, problem_size+1, 1)
-            self.ax.set_xticks(ticks, minor=True)
-            self.ax.set_yticks(ticks, minor=True)
-            plt.grid(which='minor', alpha=0.4)
-
         for o in self.problem.obstacles:
             self.ax.add_patch(o.patch)
 
