@@ -140,11 +140,11 @@ class PathPlanningProblem:
 
 class Environment:
 
-    map_id = 0
+    map_id = 1
 
-    def __init__(self, problem_size, num_objects, min_obj_size, max_obj_size, grid=True, seed=None):
+    def __init__(self, problem_size, num_objects, min_obj_size, max_obj_size, grid=True, seed=None, display_seed=True):
 
-        Seed(seed)
+        Seed(seed, display_seed)
         self.map_id = Environment.map_id
         Environment.map_id += 1
 
