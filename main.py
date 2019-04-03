@@ -26,7 +26,7 @@ def main():
     all_decomposition_resolutions = [1.0, 3.0, 5.0]
 
     # RRT params
-    max_num_steps = 10000
+    max_num_steps = 100000
     all_step_sizes = [1, 3, 5]
 
     # Plot/timing params
