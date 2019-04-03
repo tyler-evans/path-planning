@@ -149,6 +149,8 @@ class Environment:
         self.map_id = Environment.map_id
         Environment.map_id += 1
 
+        self.seed = seed
+
         self.width = problem_size
         self.height = problem_size
         self.num_objects = num_objects

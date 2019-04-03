@@ -43,13 +43,21 @@ class DisplayPlot:
             images.append(self.ax.scatter(*vertices.T, s=1))
             if path is not None and path.shape[0] > 0:
                 images.append(self.ax.plot(*path.T, 'r-')[0])
-                animation = ArtistAnimation(self.fig, [images[:i] for i in range(1, len(images) + 1)], interval=0.01,
+                print('Animating...')
+                animation = ArtistAnimation(self.fig, [images[:i] for i in range(1, len(images) + 1)], interval=1.0,
                                             blit=True, repeat=False)
+            #animation.save('Plots/map_%d.gif'%self.env.map_id, writer='imagemagick')
+            input('ready')
             plt.show()
+            print('Done')
         elif self.display_type == DisplayType.PLOT:
             self.ax.scatter(*vertices.T, color='k', s=1)
             if path is not None and path.shape[0] > 0:
                 self.ax.plot(*path.T, 'r-')
+            #plt.savefig('Plots/map_%d_seed_%d.png'%(self.env.map_id, self.env.seed))
+            input('ready')
             plt.show()
+            print('Done')
+
 
 
