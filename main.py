@@ -23,7 +23,7 @@ def main():
     max_obj_size_map = {10: 50, 20: 50, 40: 20, 60: 10}
 
     # Quadtree params
-    all_decomposition_resolutions = [1.0, 3.0, 5.0]
+    all_decomposition_resolutions = [1.0, 10.0, 50.0]
 
     # RRT params
     max_num_steps = 100000

@@ -1,3 +1,31 @@
+------------------------------------------------------------------------------------------------------------------------
+
+The results below are obtained by running an experiment which generates 10 different maps, which are then presented as
+path finding problems to each of the solutions: QuadTree Decomposition + Rapidly Exploring Random Tree.
+
+The two path Path Planning algorithms have parameters which can be tweaked which can alter the performance on the
+respective problems.
+
+=======================
+QuadTree Decomposition:
+=======================
+Decomposition Resolution - Minimum subdivision size of a cell
+
+Values: [1.0, 3.0, 5.0]
+
+==============================
+Rapidly Exploring Random Tree:
+==============================
+Step Size - The length of the step taken during each iteration of the path finding algorithm
+
+Values: [1, 3, 5]
+
+------------------------------------------------------------------------------------------------------------------------
+
+The averages are taken over each algorithm's performance using the selected parameters on 10 Different Maps:
+
++---------------------------------------------------------------------------------------+
+|         QUADTREE DECOMPOSITION | 10 Different Maps | Problem Size (100 x 100)         |
 +-----------+--------------------------+----------------------+-------------------------+
 | # Objects | Decomposition Resolution | Average Path Lengths | Average Times (Seconds) |
 +-----------+--------------------------+----------------------+-------------------------+
